@@ -131,8 +131,26 @@ public class SimplifiedOkeyGame {
      * if multiple players have the same length may return multiple players
      */
     public Player[] getPlayerWithHighestLongestChain() {
-        Player[] winners = new Player[1];
+        Player[] winners2 = new Player[4];
+        int index = 0;
+        winners2[index] = players[0];
+        for (int i = 1; i < 4 ; i++){
+            if (winners2[index].findLongestChain() < players[i].findLongestChain()){
+                winners2[index] = players[i];
+                winners2[1] = null;
+                winners2[2] = null;
+                winners2[3] = null;
+            }
+            else if (winners2[index].findLongestChain() == players[i].findLongestChain()){
+                index++;
+                winners2[index] = players[i];
+            }
+        }
 
+        Player[] winners = new Player[index];
+        for (int i = 0; i < index; i++){
+            winners[i] = winners2[i];
+        }
         return winners;
     }
     
@@ -151,7 +169,18 @@ public class SimplifiedOkeyGame {
      * by checking if it increases the longest chain length, if not get the top tile
      */
     public void pickTileForComputer() {
+        boolean taken = false;
 
+        for (int i = 0; i < 14; i++){
+            if (lastDiscardedTile.canFormChainWith(tiles[i])){
+                getLastDiscardedTile();
+                taken = true;
+                break;
+            }
+        }
+        if (taken == false){
+            getTopTile();
+        }
     }
 
     /*
@@ -159,7 +188,17 @@ public class SimplifiedOkeyGame {
      * you may choose based on how useful each tile is
      */
     public void discardTileForComputer() {
-
+        for (int i = 0; i < 14; i++){
+            int sync = 0;
+            for (int j = i+1; j < 14; j++){
+                if (tiles[j].canFormChainWith(tiles[j])){
+                    sync++;
+                }
+            }
+            if (sync == 0){
+                discardTile(i);
+            }
+        }
     }
 
     /*
@@ -168,7 +207,7 @@ public class SimplifiedOkeyGame {
      * that player's tiles
      */
     public void discardTile(int tileIndex) {
-
+        tiles[tileIndex] = null;
     }
 
     public void displayDiscardInformation() {
