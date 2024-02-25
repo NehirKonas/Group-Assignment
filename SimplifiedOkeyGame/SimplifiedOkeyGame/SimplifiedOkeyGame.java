@@ -32,7 +32,23 @@ public class SimplifiedOkeyGame {
      * other players get 14 tiles, this method assumes the tiles are already shuffled
      */
     public void distributeTilesToPlayers() {
-
+        for (Player player : this.players)
+        {
+            int j;
+            if (player == this.players[0])
+            {
+                j = 15;
+            }
+            else 
+            {
+                j = 14;
+            }
+            for (int i = 0; i < j; i++)
+            {
+                player.playerTiles[i] = this.tiles[i];
+                this.tiles = removeTile(tiles, i);
+            }
+        }
     }
 
     /*
@@ -41,7 +57,9 @@ public class SimplifiedOkeyGame {
      * it should return the toString method of the tile so that we can print what we picked
      */
     public String getLastDiscardedTile() {
-        return null;
+        Tile tile = lastDiscardedTile;
+        this.players[this.currentPlayerIndex].addTile(tile);
+        return tile.toString();
     }
 
     /*
@@ -51,22 +69,62 @@ public class SimplifiedOkeyGame {
      * returns the toString method of the tile so that we can print what we picked
      */
     public String getTopTile() {
-        return null;
+        Tile tile = this.getTiles()[this.tiles.length - 1];
+        this.tiles = removeTile(this.tiles, this.tiles.length - 1);
+        this.players[0].addTile(tile); //emin değilim 
+        return tile.toString();
     }
+
+     // helper method to remove the upmost tile 
+     public Tile[] removeTile(Tile[] tiles, int ind)
+     {
+         Tile[] newTiles = new Tile[tiles.length - 1];
+         for (int i = 0; i < newTiles.length; i++)
+         {
+             if (i < ind)
+             {
+                 newTiles[i] = tiles[i];
+             }
+             else if (i > ind)
+             {
+                 newTiles[i] = tiles[i + 1];
+             }
+         }
+         return newTiles;
+     }
 
     /*
      * TODO: should randomly shuffle the tiles array before game starts
      */
     public void shuffleTiles() {
-
+        Tile[] tiles = this.getTiles();
+        for (int i = 0; i < tiles.length; i++)
+        {
+            int random = (int) Math.random() * (tiles.length - 0);
+            tiles[i] = tiles[random];
+        }
     }
+
+    // helper method
+    public Tile[] getTiles()
+    {
+        return this.tiles;
+    }
+
 
     /*
      * TODO: check if game still continues, should return true if current player
      * finished the game. use checkWinning method of the player class to determine
      */
     public boolean didGameFinish() {
-        return false;
+        if (this.players[this.currentPlayerIndex].checkWinning() == true)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /* TODO: finds the player who has the highest number for the longest chain
